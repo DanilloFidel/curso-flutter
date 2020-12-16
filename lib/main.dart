@@ -1,10 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import './questao.dart';
+import './resposta.dart';
 
 main() => runApp(PerguntaApp());
 
 class _PerguntaAppState extends State<PerguntaApp> {
   int _perguntaSelecionada = 0;
+  final List<Map<String, Object>> _perguntas = const [
+    {
+      'texto': 'Qual sua cor favorita?',
+      'respostas': ['azul', 'vermelho', 'verde', 'amarelo']
+    },
+    {
+      'texto': 'Qual seu animal favorito?',
+      'respostas': ['macaco', 'pato', 'tigre', 'peixe']
+    },
+    {
+      'texto': 'Qual sua comida favorita?',
+      'respostas': ['pizza', 'lasanha', 'hambuguer', 'frango assado']
+    },
+  ];
 
   void _responder() {
     setState(() {
@@ -13,30 +29,28 @@ class _PerguntaAppState extends State<PerguntaApp> {
     print('Pergunta respondida!');
   }
 
+  bool get _temPerguntaSelecionada {
+    return _perguntaSelecionada < _perguntas.length;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<String> perguntas = [
-      'Qual é a sua cor favorita',
-      'Qual é o seu animaç favorito',
-      'Qual é a sua comida favorita'
-    ];
+    List<String> respostas = _temPerguntaSelecionada
+        ? _perguntas[_perguntaSelecionada]['respostas']
+        : null;
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(title: Text('Perguntas')),
-            body: Column(
-              children: [
-                Text(perguntas[_perguntaSelecionada]),
-                RaisedButton(
-                  child: Text('Resposta 1'),
-                  onPressed: _responder,
-                ),
-                RaisedButton(child: Text('Resposta 2'), onPressed: _responder),
-                RaisedButton(
-                  child: Text('Resposta 3'),
-                  onPressed: _responder,
-                ),
-              ],
-            )));
+            body: _temPerguntaSelecionada
+                ? Column(
+                    children: [
+                      Questao(_perguntas[_perguntaSelecionada]['texto']),
+                      ...respostas
+                          .map((resp) => Resposta(resp, _responder))
+                          .toList()
+                    ],
+                  )
+                : null));
   }
 }
 
